@@ -1,4 +1,4 @@
-# PU_ICL_Code
+# In-Context Learning for Positive-Unlabeled Classification and Outlier Detection
 
 Code and experiment artifacts for PU in-context learning on tabular data.
 
