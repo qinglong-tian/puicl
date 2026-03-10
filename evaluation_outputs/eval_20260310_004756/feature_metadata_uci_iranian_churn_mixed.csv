@@ -1,0 +1,14 @@
+feature,feature_type,raw_unique_values,cardinality
+Call  Failure,continuous,37,1
+Complains,categorical,2,2
+Subscription  Length,continuous,45,1
+Charge  Amount,continuous,11,1
+Seconds of Use,continuous,1756,1
+Frequency of use,continuous,242,1
+Frequency of SMS,continuous,405,1
+Distinct Called Numbers,continuous,92,1
+Age Group,continuous,5,1
+Tariff Plan,continuous,2,1
+Status,categorical,2,2
+Age,continuous,5,1
+Customer Value,continuous,2654,1

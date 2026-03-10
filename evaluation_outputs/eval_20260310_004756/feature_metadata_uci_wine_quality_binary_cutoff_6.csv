@@ -1,0 +1,12 @@
+feature,feature_type,raw_unique_values,cardinality
+fixed acidity,continuous,106,1
+volatile acidity,continuous,187,1
+citric acid,continuous,89,1
+residual sugar,continuous,316,1
+chlorides,continuous,214,1
+free sulfur dioxide,continuous,135,1
+total sulfur dioxide,continuous,276,1
+density,continuous,998,1
+pH,continuous,108,1
+sulphates,continuous,111,1
+alcohol,continuous,111,1
