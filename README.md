@@ -16,9 +16,28 @@ This repository contains:
 - `data/`: padded-batch generation for PU pretraining
 - `pretrained_model/latest.pt`: pretrained checkpoint
 - `evaluate_pretrained_model.py`: benchmark evaluator for the pretrained checkpoint
-- `evaluate_pretrained_model_reference.ipynb`: reference notebook used as the source of truth for benchmark datasets, PU conversion, and metrics
 - `evaluation_outputs/`: saved benchmark runs
 - `run_pretrain_two_phase_hpc_v2.sbatch`: two-phase HPC training launcher
+
+## Quick Start
+
+Evaluate the bundled checkpoint:
+
+```bash
+python evaluate_pretrained_model.py
+```
+
+The evaluator is standalone and does not depend on any external notebook.
+
+Run the same benchmark with custom PU conversion settings:
+
+```bash
+python evaluate_pretrained_model.py \
+  --max-positive-size 900 \
+  --unlabeled-positive-ratio 2 \
+  --labeled-positive-ratio 1 \
+  --outlier-rate 0.13
+```
 
 ## Model
 
@@ -59,9 +78,65 @@ Example launch:
 sbatch /path/to/PU_ICL_Code/run_pretrain_two_phase_hpc_v2.sbatch
 ```
 
+## Using The Pretrained Model
+
+The bundled checkpoint is stored at `pretrained_model/latest.pt`.
+
+Minimal example:
+
+```python
+from pathlib import Path
+
+import torch
+
+from model import NanoTabPFNPUModel
+
+device = "cuda" if torch.cuda.is_available() else "cpu"
+checkpoint_path = Path("pretrained_model/latest.pt")
+
+payload = torch.load(checkpoint_path, map_location=device)
+model_cfg = payload["config"]["model"]
+
+model = NanoTabPFNPUModel(
+    embedding_size=int(model_cfg["embedding_size"]),
+    num_attention_heads=int(model_cfg["num_attention_heads"]),
+    mlp_hidden_size=int(model_cfg["mlp_hidden_size"]),
+    num_layers=int(model_cfg["num_layers"]),
+    num_outputs=int(model_cfg["num_outputs"]),
+).to(device)
+model.load_state_dict(payload["model_state_dict"])
+model.eval()
+
+# Example PU task:
+# - first `train_size` rows are labeled positives
+# - remaining rows are unlabeled rows to score
+train_size = 10
+num_unlabeled = 30
+num_features = 12
+
+X_task = torch.randn(train_size + num_unlabeled, num_features, device=device)
+y_train = torch.zeros(train_size, device=device)
+
+with torch.no_grad():
+    logits = model(
+        (X_task.unsqueeze(0), y_train.unsqueeze(0)),
+        train_test_split_index=train_size,
+    ).squeeze(0)
+    probs = torch.softmax(logits, dim=-1)
+    outlier_prob = probs[:, 1]
+
+print(outlier_prob.shape)  # [num_unlabeled]
+```
+
+Input/output conventions:
+- `X_task` should be a float tensor of shape `[rows, features]`
+- `y_train` contains labels only for the labeled prefix, with `0` for labeled positives/inliers
+- the model returns logits only for rows after `train_test_split_index`
+- class `1` corresponds to the outlier score used in evaluation
+
 ## Evaluation
 
-The evaluator is designed to preserve the benchmark protocol defined in the reference notebook:
+The evaluator is standalone and embeds the benchmark protocol directly:
 - same benchmark datasets
 - same feature preprocessing
 - same conversion from binary classification datasets to PU tasks
@@ -69,20 +144,41 @@ The evaluator is designed to preserve the benchmark protocol defined in the refe
 
 The evaluator runs the checkpoint in `pretrained_model/latest.pt` by default.
 
-Example:
+Important arguments:
+- `--checkpoint`: path to the checkpoint to evaluate. Defaults to `pretrained_model/latest.pt`.
+- `--output-dir`: directory where evaluation runs are saved. Each run creates `eval_<timestamp>/`.
+- `--cache-dir`: directory for cached UCI downloads and parsed files. Defaults to `.cache/` inside the repo.
+- `--device`: execution device. Use `auto`, `cpu`, `cuda`, or `mps`.
+- `--allow-uci-download` / `--no-uci-download`: enable or disable downloading benchmark datasets that are not already cached.
+- `--n-replicates`: number of independent PU tasks sampled per dataset.
+- `--max-attempts-per-dataset`: maximum number of tries used to obtain valid PU tasks for a dataset. This matters when a dataset cannot always satisfy the requested PU constraints.
+- `--global-seed`: random seed controlling dataset-level reproducibility.
+- `--max-categorical-classes`: cap used when encoding categorical features after preprocessing.
 
-```bash
-python evaluate_pretrained_model.py
-```
+PU-conversion arguments:
+- `--max-positive-size`: maximum number of examples from the chosen positive class to use when constructing one PU task.
+- `--unlabeled-positive-ratio` and `--labeled-positive-ratio`: define the split of selected positives between the unlabeled pool and the labeled prefix. For example, `2` and `1` means two-thirds of the selected positives go to the unlabeled pool and one-third remain labeled.
+- `--outlier-rate`: target fraction of negatives inside the unlabeled pool. For example, `0.13` means the unlabeled set is built to contain about `13%` outliers and `87%` unlabeled positives.
 
-PU task construction can be controlled from the command line. Example:
+What one replicate means:
+- choose one of the two original class labels as the positive class
+- sample up to `max_positive_size` positives from that class
+- split those positives into labeled and unlabeled parts using the requested ratio
+- add negatives into the unlabeled pool to match `outlier_rate`
+- evaluate the model on that resulting PU task
+
+Example with all major controls shown:
 
 ```bash
 python evaluate_pretrained_model.py \
+  --checkpoint pretrained_model/latest.pt \
+  --device auto \
+  --n-replicates 10 \
   --max-positive-size 900 \
   --unlabeled-positive-ratio 2 \
   --labeled-positive-ratio 1 \
-  --outlier-rate 0.13
+  --outlier-rate 0.13 \
+  --global-seed 42
 ```
 
 Evaluation outputs are written to:
@@ -112,5 +208,5 @@ Some evaluation datasets are downloaded from the UCI repository on first use and
 
 ## Notes
 
-- `evaluate_pretrained_model.py` uses `evaluate_pretrained_model_reference.ipynb` as a reference implementation for the benchmark protocol, so the repository remains aligned with the original notebook logic.
+- `evaluate_pretrained_model.py` is self-contained and does not depend on any external notebook at runtime.
 - Existing evaluation outputs in `evaluation_outputs/` are included as example benchmark runs with different PU settings.
