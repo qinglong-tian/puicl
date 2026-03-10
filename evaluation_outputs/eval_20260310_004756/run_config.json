@@ -1,6 +1,6 @@
 {
-  "checkpoint_path": "/Users/qltian/Library/CloudStorage/GoogleDrive-qltian2021@gmail.com/Other computers/My Laptop/Documents/Research/ai/PU_ICL_Code/pretrained_model/latest.pt",
-  "reference_notebook": "/Users/qltian/Library/CloudStorage/GoogleDrive-qltian2021@gmail.com/Other computers/My Laptop/Documents/Research/ai/slim_pretrain/pretrain_v2/evaluate_pretrained_model.ipynb",
+  "checkpoint_path": "pretrained_model/latest.pt",
+  "reference_notebook": "<external>/evaluate_pretrained_model.ipynb",
   "device": "cpu",
   "allow_uci_download": true,
   "n_replicates": 10,
@@ -13,7 +13,7 @@
   "outlier_rate": 0.2,
   "max_categorical_classes": 64,
   "global_seed": 42,
-  "cache_dir": "/Users/qltian/Library/CloudStorage/GoogleDrive-qltian2021@gmail.com/Other computers/My Laptop/Documents/Research/ai/slim_pretrain/pretrain_v2/.cache",
+  "cache_dir": "<external>/.cache",
   "load_missing_keys": [],
   "load_unexpected_keys": []
 }

@@ -94,6 +94,16 @@ def resolve_cache_dir(requested: Optional[Path], pretrain_root: Path) -> Path:
     return pretrain_root / ".cache"
 
 
+def _public_path_label(path: Path, repo_root: Path) -> str:
+    resolved = path.expanduser().resolve()
+    try:
+        return str(resolved.relative_to(repo_root.resolve()))
+    except ValueError:
+        if resolved.name:
+            return f"<external>/{resolved.name}"
+        return "<external>"
+
+
 def load_model(checkpoint_path: Path, model_cls, device: str):
     payload = torch.load(checkpoint_path, map_location=device)
     model_cfg = payload.get("config", {}).get("model", {})
@@ -1236,7 +1246,7 @@ def main() -> None:
         dataset["feature_metadata"].to_csv(run_dir / f"feature_metadata_{safe_name}.csv", index=False)
 
     run_config = {
-        "checkpoint_path": str(checkpoint_path),
+        "checkpoint_path": _public_path_label(checkpoint_path, repo_root),
         "device": device,
         "allow_uci_download": args.allow_uci_download,
         "n_replicates": args.n_replicates,
@@ -1246,7 +1256,7 @@ def main() -> None:
         "outlier_rate": args.outlier_rate,
         "max_categorical_classes": args.max_categorical_classes,
         "global_seed": args.global_seed,
-        "cache_dir": str(cache_dir),
+        "cache_dir": _public_path_label(cache_dir, repo_root),
         "load_missing_keys": list(load_result.missing_keys),
         "load_unexpected_keys": list(load_result.unexpected_keys),
     }

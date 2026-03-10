@@ -1,16 +1,14 @@
 #!/bin/bash
-#SBATCH --account=def-qltian
+# Add your own site-specific account and mail directives if needed.
 #SBATCH --job-name=slim-pretrain-v2-2phase
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --gres=gpu:h100:2
 #SBATCH --cpus-per-task=4
 #SBATCH --mem=16G
-#SBATCH --time=00:30:00
+#SBATCH --time=02:30:00
 #SBATCH --output=logs/%x-%j.out
 #SBATCH --signal=TERM@120
-#SBATCH --mail-user=qltian2021@gmail.com
-#SBATCH --mail-type=BEGIN,END,FAIL,TIME_LIMIT
 
 set -euo pipefail
 
@@ -93,7 +91,7 @@ TAIL_PHASE_START_STEP="${TAIL_PHASE_START_STEP:-$CURRIC_TOTAL_STEPS}"
 TAIL_TOTAL_STAGES="${TAIL_TOTAL_STAGES:-1}"
 TAIL_STEPS_PER_STAGE="${TAIL_STEPS_PER_STAGE:-$TAIL_STEPS}"
 
-BATCH_SIZE="${BATCH_SIZE:-16}"
+BATCH_SIZE="${BATCH_SIZE:-24}"
 NUM_FEATURES_MIN="${NUM_FEATURES_MIN:-5}"
 NUM_FEATURES_MAX="${NUM_FEATURES_MAX:-24}"
 POSITIVE_SIZE_MIN="${POSITIVE_SIZE_MIN:-100}"

@@ -1,5 +1,5 @@
 {
-  "checkpoint_path": "/Users/qltian/Library/CloudStorage/GoogleDrive-qltian2021@gmail.com/Other computers/My Laptop/Documents/Research/ai/PU_ICL_Code/pretrained_model/latest.pt",
+  "checkpoint_path": "pretrained_model/latest.pt",
   "device": "mps",
   "allow_uci_download": false,
   "n_replicates": 10,
@@ -12,7 +12,7 @@
   "outlier_rate": 0.2,
   "max_categorical_classes": 64,
   "global_seed": 42,
-  "cache_dir": "/tmp/pu_icl_eval_cache_smoke",
+  "cache_dir": "<external>/pu_icl_eval_cache_smoke",
   "load_missing_keys": [],
   "load_unexpected_keys": []
 }
