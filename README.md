@@ -91,7 +91,8 @@ import torch
 
 from model import NanoTabPFNPUModel
 
-device = "cuda" if torch.cuda.is_available() else "cpu"
+torch.manual_seed(0)
+device = "cpu"  # use "cuda" here if you want GPU inference
 checkpoint_path = Path("pretrained_model/latest.pt")
 
 payload = torch.load(checkpoint_path, map_location=device)
@@ -125,7 +126,15 @@ with torch.no_grad():
     probs = torch.softmax(logits, dim=-1)
     outlier_prob = probs[:, 1]
 
+print(outlier_prob[:5])
 print(outlier_prob.shape)  # [num_unlabeled]
+```
+
+Example output:
+
+```text
+tensor([0.9542, 0.9461, 0.9486, 0.9652, 0.9564])
+torch.Size([30])
 ```
 
 Input/output conventions:
@@ -208,5 +217,4 @@ Some evaluation datasets are downloaded from the UCI repository on first use and
 
 ## Notes
 
-- `evaluate_pretrained_model.py` is self-contained and does not depend on any external notebook at runtime.
 - Existing evaluation outputs in `evaluation_outputs/` are included as example benchmark runs with different PU settings.
