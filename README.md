@@ -124,6 +124,19 @@ print(np.round(outlier_prob[:10], 4))
 PY
 ```
 
+Example output from a run of the snippet above on March 11, 2026:
+
+```text
+labeled positives: 64
+unlabeled rows: 400
+accuracy: 0.9450
+confusion matrix:
+[[178  22]
+ [  0 200]]
+first 10 outlier probabilities:
+[0.9975 0.0136 0.9183 0.0116 0.0107 0.9333 0.019  0.9999 0.0126 0.0103]
+```
+
 The key inference convention is:
 
 - the model sees a prefix of labeled positive rows
