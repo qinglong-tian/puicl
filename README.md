@@ -43,20 +43,58 @@ pip install .[eval]
 
 ## Quick Start
 
-Load the packaged checkpoint and score unlabeled examples:
+Load the packaged checkpoint and run the full synthetic PU example:
 
 ```bash
 python - <<'PY'
 import torch
+from sklearn.metrics import accuracy_score, confusion_matrix, roc_auc_score
 
 from puicl import load_pretrained_model
 
-model = load_pretrained_model(device="cpu")
-labeled = torch.randn(8, 12)
-unlabeled = torch.randn(16, 12)
-scores = model.score_unlabeled(labeled, unlabeled)
-print(scores.shape)
-print(scores[:3])
+torch.manual_seed(0)
+device = "cpu"  # use "cuda" here if you want GPU inference
+model = load_pretrained_model(device=device)
+
+# Synthetic PU task:
+# - labeled positives are sampled from one Gaussian
+# - unlabeled rows are an explicit mixture of positive and negative Gaussians
+train_size = 64
+num_unlabeled_pos = 128
+num_unlabeled_neg = 128
+num_features = 12
+
+positive_mean = torch.full((num_features,), 1.0, device=device)
+negative_mean = torch.full((num_features,), -1.0, device=device)
+
+labeled_pos = torch.randn(train_size, num_features, device=device) + positive_mean
+unlabeled_pos = torch.randn(num_unlabeled_pos, num_features, device=device) + positive_mean
+unlabeled_neg = torch.randn(num_unlabeled_neg, num_features, device=device) + negative_mean
+
+X_unlabeled = torch.cat([unlabeled_pos, unlabeled_neg], dim=0)
+y_true = torch.cat(
+    [
+        torch.zeros(num_unlabeled_pos, dtype=torch.long, device=device),
+        torch.ones(num_unlabeled_neg, dtype=torch.long, device=device),
+    ],
+    dim=0,
+)
+
+perm = torch.randperm(X_unlabeled.shape[0], device=device)
+X_unlabeled = X_unlabeled[perm]
+y_true = y_true[perm]
+
+outlier_prob = model.score_unlabeled(labeled_pos, X_unlabeled)
+y_pred = (outlier_prob >= 0.5).to(torch.long)
+
+accuracy = accuracy_score(y_true.numpy(), y_pred.numpy())
+auc = roc_auc_score(y_true.numpy(), outlier_prob.numpy())
+cm = confusion_matrix(y_true.numpy(), y_pred.numpy())
+
+print(f"num_unlabeled={len(y_true)}")
+print(f"accuracy={accuracy:.4f}")
+print(f"auc={auc:.4f}")
+print(cm)
 PY
 ```
 
