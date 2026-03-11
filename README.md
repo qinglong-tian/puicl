@@ -128,7 +128,7 @@ The key inference convention is:
 
 ## Public API
 
-The installable package is under [src/puicl](/Users/qltian/Library/CloudStorage/GoogleDrive-qltian2021@gmail.com/Other%20computers/My%20Laptop/Documents/Research/ai/PU_ICL_Code/src/puicl).
+The installable package is under [src/puicl](src/puicl).
 
 Main entry points:
 
@@ -155,25 +155,25 @@ model = load_pretrained_model(checkpoint="/path/to/latest.pt", device="cuda")
 
 The packaged checkpoint is bundled as package data:
 
-- [src/puicl/checkpoints/latest.pt](/Users/qltian/Library/CloudStorage/GoogleDrive-qltian2021@gmail.com/Other%20computers/My%20Laptop/Documents/Research/ai/PU_ICL_Code/src/puicl/checkpoints/latest.pt)
+- [src/puicl/checkpoints/latest.pt](src/puicl/checkpoints/latest.pt)
 
 The core model implementation used by the package is:
 
-- [src/puicl/model.py](/Users/qltian/Library/CloudStorage/GoogleDrive-qltian2021@gmail.com/Other%20computers/My%20Laptop/Documents/Research/ai/PU_ICL_Code/src/puicl/model.py)
+- [src/puicl/model.py](src/puicl/model.py)
 
 The high-level inference wrapper is:
 
-- [src/puicl/inference.py](/Users/qltian/Library/CloudStorage/GoogleDrive-qltian2021@gmail.com/Other%20computers/My%20Laptop/Documents/Research/ai/PU_ICL_Code/src/puicl/inference.py)
+- [src/puicl/inference.py](src/puicl/inference.py)
 
 ## Research Code
 
 The repository also includes the research pipeline used to produce and evaluate the checkpoint:
 
-- [train/](/Users/qltian/Library/CloudStorage/GoogleDrive-qltian2021@gmail.com/Other%20computers/My%20Laptop/Documents/Research/ai/PU_ICL_Code/train): pretraining configuration, trainer, and launchers
-- [simplified_prior/](/Users/qltian/Library/CloudStorage/GoogleDrive-qltian2021@gmail.com/Other%20computers/My%20Laptop/Documents/Research/ai/PU_ICL_Code/simplified_prior): synthetic prior and curriculum logic
-- [data/](/Users/qltian/Library/CloudStorage/GoogleDrive-qltian2021@gmail.com/Other%20computers/My%20Laptop/Documents/Research/ai/PU_ICL_Code/data): padded-batch generation
-- [evaluate_pretrained_model.py](/Users/qltian/Library/CloudStorage/GoogleDrive-qltian2021@gmail.com/Other%20computers/My%20Laptop/Documents/Research/ai/PU_ICL_Code/evaluate_pretrained_model.py): standalone benchmark evaluator
-- [run_pretrain_two_phase_hpc_v2.sbatch](/Users/qltian/Library/CloudStorage/GoogleDrive-qltian2021@gmail.com/Other%20computers/My%20Laptop/Documents/Research/ai/PU_ICL_Code/run_pretrain_two_phase_hpc_v2.sbatch): Slurm launcher template
+- [train/](train): pretraining configuration, trainer, and launchers
+- [simplified_prior/](simplified_prior): synthetic prior and curriculum logic
+- [data/](data): padded-batch generation
+- [evaluate_pretrained_model.py](evaluate_pretrained_model.py): standalone benchmark evaluator
+- [run_pretrain_two_phase_hpc_v2.sbatch](run_pretrain_two_phase_hpc_v2.sbatch): Slurm launcher template
 
 Current default training configuration:
 
