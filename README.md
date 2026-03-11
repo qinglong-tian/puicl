@@ -1,6 +1,8 @@
 # In-Context Learning for Positive-Unlabeled Classification and Outlier Detection
 
 [![test](https://github.com/qinglong-tian/PU_ICL_Code/actions/workflows/tests.yml/badge.svg)](https://github.com/qinglong-tian/PU_ICL_Code/actions/workflows/tests.yml)
+![python](https://img.shields.io/badge/python-3.10%2B-blue)
+[![license](https://img.shields.io/github/license/qinglong-tian/PU_ICL_Code)](LICENSE)
 
 This repository contains two things:
 

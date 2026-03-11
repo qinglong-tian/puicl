@@ -8,6 +8,7 @@ version = "0.1.0"
 description = "In-context learning for positive-unlabeled classification and outlier detection."
 readme = "README.md"
 requires-python = ">=3.10"
+license = { file = "LICENSE" }
 dependencies = [
   "numpy>=1.24",
   "torch>=2.0",
@@ -16,6 +17,13 @@ authors = [
   { name = "Qinglong Tian" },
 ]
 urls = { Repository = "https://github.com/qinglong-tian/PU_ICL_Code" }
+classifiers = [
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+]
 
 [project.optional-dependencies]
 eval = [
