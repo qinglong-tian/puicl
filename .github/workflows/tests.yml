@@ -1,0 +1,29 @@
+name: test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  smoke-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install package
+        run: |
+          python -m pip install --upgrade pip
+          pip install .
+
+      - name: Smoke test packaged inference
+        run: |
+          python -c "import numpy as np; from puicl import load_pretrained_model; model = load_pretrained_model(device='cpu'); rng = np.random.default_rng(0); labeled = rng.normal(size=(16, 4)).astype('float32'); unlabeled = rng.normal(size=(32, 4)).astype('float32'); scores = model.score_unlabeled(labeled, unlabeled); assert scores.shape == (32,), scores.shape; assert np.isfinite(scores.numpy()).all(); print('checkpoint:', model.checkpoint_path); print('scores shape:', tuple(scores.shape))"
