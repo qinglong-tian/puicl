@@ -26,7 +26,7 @@ pip install .
 Install directly from GitHub:
 
 ```bash
-pip install git+https://github.com/qinglong-tian/puicl.git
+pip install git+[GitHub Link]
 ```
 
 If you also want to run the benchmark evaluator in this repository, install the optional evaluation dependencies:
